@@ -159,7 +159,7 @@ export default function AdminCredentials() {
           </div>
           </div>
         </div>
-      </div>
+   
 
       {/* Admin Profile Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
