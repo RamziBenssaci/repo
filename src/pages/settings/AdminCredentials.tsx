@@ -56,9 +56,6 @@ export default function AdminCredentials() {
           id: user.id.toString(),
           name: user.name,
           email: user.email,
-          phone: user.phone || '',
-          role: user.role,
-          lastLogin: user.last_login || '',
           isActive: true,
           permissions: user.permissions || []
         });
@@ -83,7 +80,6 @@ export default function AdminCredentials() {
         body: JSON.stringify({
           name: profileData.name,
           email: profileData.email,
-          phone: profileData.phone
         })
       }, true, 'admin');
 
@@ -161,11 +157,6 @@ export default function AdminCredentials() {
             <h1 className="text-3xl font-bold text-primary mb-2">إعدادات المدير</h1>
             <p className="text-muted-foreground">إدارة المعلومات الشخصية</p>
           </div>
-          <div className="flex items-center gap-3">
-            <Badge variant="default" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              مدير نشط
-            </Badge>
           </div>
         </div>
       </div>
@@ -204,26 +195,7 @@ export default function AdminCredentials() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="phone">رقم الجوال</Label>
-                <Input
-                  id="phone"
-                  value={profileData.phone}
-                  onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                  className="text-right"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="role">الدور الوظيفي</Label>
-                <Input
-                  id="role"
-                  value={profileData.role}
-                  disabled
-                  className="text-right bg-muted"
-                />
-              </div>
-            </div>
+           
             <Button onClick={handleProfileUpdate} className="w-full" disabled={updating}>
               {updating ? (
                 <>
@@ -251,29 +223,12 @@ export default function AdminCredentials() {
                 <span className="text-sm font-mono">{profileData.id}</span>
               </div>
               <Separator />
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">آخر تسجيل دخول</span>
-                <span className="text-sm">{profileData.lastLogin}</span>
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">حالة الحساب</span>
                 <Badge variant="default">نشط</Badge>
               </div>
               <Separator />
               <div>
-                <p className="text-sm text-muted-foreground mb-2">الصلاحيات:</p>
-                <div className="space-y-1">
-                  {profileData.permissions.map((permission) => (
-                    <Badge key={permission} variant="secondary" className="text-xs">
-                      {permission === 'full_access' && 'صلاحية كاملة'}
-                      {permission === 'user_management' && 'إدارة المستخدمين'}
-                      {permission === 'system_settings' && 'إعدادات النظام'}
-                      {permission === 'reports' && 'التقارير'}
-                      {permission === 'audit_logs' && 'سجلات المراجعة'}
-                    </Badge>
-                  ))}
-                </div>
               </div>
             </div>
           </CardContent>
