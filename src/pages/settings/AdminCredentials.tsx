@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Shield, User, Settings, AlertTriangle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { getCurrentUser, apiCall } from '@/lib/api';
+import { apiCall } from '@/lib/api';
 
 interface AdminProfile {
   id: string;
@@ -42,7 +41,6 @@ export default function AdminCredentials() {
 
   const { toast } = useToast();
 
-  // Fetch admin profile data
   useEffect(() => {
     fetchAdminProfile();
   }, []);
@@ -50,14 +48,20 @@ export default function AdminCredentials() {
   const fetchAdminProfile = async () => {
     try {
       setLoading(true);
-      const user = getCurrentUser('admin');
-      if (user) {
+      const response = await apiCall('/admin/profile', {
+        method: 'GET'
+      }, true, 'admin');
+
+      if (response.success && response.data) {
         setProfileData({
-          id: user.id.toString(),
-          name: user.name,
-          email: user.email,
+          id: response.data.id.toString(),
+          name: response.data.name,
+          email: response.data.email,
+          phone: response.data.phone || '',
+          role: response.data.role || '',
+          lastLogin: response.data.lastLogin || '',
           isActive: true,
-          permissions: user.permissions || []
+          permissions: response.data.permissions || []
         });
       }
     } catch (error) {
@@ -88,6 +92,7 @@ export default function AdminCredentials() {
           title: "تم تحديث المعلومات الشخصية",
           description: "تم حفظ التغييرات بنجاح",
         });
+        await fetchAdminProfile();
       }
     } catch (error: any) {
       toast({
@@ -150,18 +155,15 @@ export default function AdminCredentials() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background rounded-lg p-6 border border-primary/20">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="text-right">
             <h1 className="text-3xl font-bold text-primary mb-2">إعدادات المدير</h1>
             <p className="text-muted-foreground">إدارة المعلومات الشخصية</p>
           </div>
-          </div>
         </div>
-   
+      </div>
 
-      {/* Admin Profile Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="md:col-span-2">
           <CardHeader>
@@ -180,7 +182,7 @@ export default function AdminCredentials() {
                 <Input
                   id="name"
                   value={profileData.name}
-                  onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                  onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
                   className="text-right"
                 />
               </div>
@@ -190,12 +192,12 @@ export default function AdminCredentials() {
                   id="email"
                   type="email"
                   value={profileData.email}
-                  onChange={(e) => setProfileData({...profileData, email: e.target.value})}
+                  onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
                   className="text-right"
                 />
               </div>
             </div>
-           
+
             <Button onClick={handleProfileUpdate} className="w-full" disabled={updating}>
               {updating ? (
                 <>
@@ -223,19 +225,17 @@ export default function AdminCredentials() {
                 <span className="text-sm font-mono">{profileData.id}</span>
               </div>
               <Separator />
-                <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">حالة الحساب</span>
                 <Badge variant="default">نشط</Badge>
               </div>
               <Separator />
-              <div>
-              </div>
+              <div></div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Password Change */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-right">
@@ -253,7 +253,7 @@ export default function AdminCredentials() {
               يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل وتتضمن أحرف وأرقام ورموز خاصة
             </AlertDescription>
           </Alert>
-          
+
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="newPassword">كلمة المرور الجديدة</Label>
@@ -262,7 +262,7 @@ export default function AdminCredentials() {
                   id="newPassword"
                   type={showNewPassword ? "text" : "password"}
                   value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                   className="text-right pr-10"
                   placeholder="أدخل كلمة المرور الجديدة"
                 />
