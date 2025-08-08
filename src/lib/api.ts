@@ -148,7 +148,7 @@ export const reportsApi = {
   getFacilities: async (): Promise<ApiResponse<any[]>> => {
     return apiCall<ApiResponse<any[]>>('/facilities', {
       method: 'GET',
-    }, true);
+    }, true, 'staff');
   },
 
   // Create new report
@@ -156,14 +156,14 @@ export const reportsApi = {
     return apiCall<ApiResponse>('/reports', {
       method: 'POST',
       body: JSON.stringify(reportData),
-    }, true);
+    }, true, 'staff');
   },
 
   // Get all reports
   getReports: async (): Promise<ApiResponse<any[]>> => {
     return apiCall<ApiResponse<any[]>>('/reports', {
       method: 'GET',
-    }, true);
+    }, true, 'staff');
   },
 
   // Update report
@@ -171,14 +171,14 @@ export const reportsApi = {
     return apiCall<ApiResponse>(`/reports/${reportId}`, {
       method: 'PUT',
       body: JSON.stringify(reportData),
-    }, true);
+    }, true, 'staff');
   },
 
   // Delete report
   deleteReport: async (reportId: string): Promise<ApiResponse> => {
     return apiCall<ApiResponse>(`/reports/${reportId}`, {
       method: 'DELETE',
-    }, true);
+    }, true, 'staff');
   },
 
   // Get dashboard statistics
