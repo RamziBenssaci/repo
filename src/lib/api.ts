@@ -59,13 +59,26 @@ export const clearAuthData = (userType: 'admin' | 'staff') => {
   localStorage.removeItem(`${userType}_user`);
 };
 
+// Helper function to determine current user type
+const getCurrentUserType = (): 'admin' | 'staff' => {
+  const adminToken = getStoredToken('admin');
+  const staffToken = getStoredToken('staff');
+  
+  if (adminToken) return 'admin';
+  if (staffToken) return 'staff';
+  return 'staff'; // fallback
+};
+
 // Generic API call function
 export const apiCall = async <T = any>(
   endpoint: string,
   options: RequestInit = {},
   requiresAuth = false,
-  userType: 'admin' | 'staff' = 'staff'
+  userType?: 'admin' | 'staff'
 ): Promise<T> => {
+  // Determine userType if not provided
+  const actualUserType = userType || getCurrentUserType();
+  
   const url = `${API_BASE_URL}${endpoint}`;
   
   const headers: Record<string, string> = {
@@ -76,7 +89,7 @@ export const apiCall = async <T = any>(
 
   // Add authentication header if required
   if (requiresAuth) {
-    const token = getStoredToken(userType);
+    const token = getStoredToken(actualUserType);
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
